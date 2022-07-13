@@ -1,0 +1,35 @@
+.user__form {
+  flex: 1 0 100%;
+  max-width: 480px;
+  padding: 40px;
+  width: 100%;
+}
+
+.form__title {
+  color: #333333;
+  font-size: 22px;
+  font-weight: bold;
+  line-height: 1;
+  margin-bottom: 20px;
+}
+
+.input__box {
+  height: 42px;
+  width: 100%;
+}
+
+.save__button {
+  border-radius: 6px;
+  height: 42px;
+  letter-spacing: 1px;
+  width: 100%;
+}
+
+.ant-modal-body {
+  display: flex;
+  align-items: center;
+}
+
+.ant-result {
+  margin: 0 auto;
+}
