@@ -3,24 +3,27 @@ import "./styles.css";
 import Spin from "../Spin";
 import FormData from "./types";
 import { Button, Form, Input, Modal, Result } from "antd";
+import { ResultStatusType } from "antd/lib/result";
 
 const InputForm: FC = () => {
   const [form] = Form.useForm();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSpinning, setIsSpinning] = useState(false);
+  const [modalText, setModalText] = useState("");
+  const [statusIcon, setStatusIcon] = useState<ResultStatusType>("success");
 
   const onFinish = async (values: FormData) => {
     setIsModalVisible(true);
     setIsSpinning(true);
     const { name, dateOfBirth, email, phone } = values;
     try {
-      let response = await fetch("https://httpbin.org/post", {
+      let response = await fetch("http://127.0.01:8881/addEmployee", {
         method: "POST",
         body: JSON.stringify({
           name: name,
           email: email,
           dob: dateOfBirth,
-          phoneNumber: phone,
+          mobile: phone,
         }),
       });
 
@@ -28,29 +31,37 @@ const InputForm: FC = () => {
       if (status === 200) {
         form.resetFields();
         setIsSpinning(false);
+        setModalText("Successfully submitted data");
+        setStatusIcon("success");
       } else {
-        console.log(
-          "Error occurred while submitting data",
-          statusText
-        );
+        setIsSpinning(false);
+        setModalText(`Error occurred while submitting data, ${statusText}`);
+        setStatusIcon("error");
       }
     } catch (err) {
-      setIsModalVisible(false);
-      alert(err);
+      setIsSpinning(false);
+      console.log(err);
+      setModalText("Failed to post data");
+      setStatusIcon("error");
     }
   };
 
-  const handleOk = () => {
+  const closeModal = () => {
     setIsModalVisible(false);
   };
 
   return (
     <>
-      <Modal title="form-submit" visible={isModalVisible} onOk={handleOk}>
+      <Modal
+        title="POST RESULT"
+        visible={isModalVisible}
+        onOk={closeModal}
+        onCancel={closeModal}
+      >
         {isSpinning ? (
           <Spin />
         ) : (
-          <Result status="success" title="Successfully submitted data" />
+          <Result status={statusIcon} title={modalText} />
         )}
       </Modal>
       <Form
@@ -65,29 +76,37 @@ const InputForm: FC = () => {
         <p className="form__title">Please enter following details</p>
         <Form.Item
           name="name"
-          rules={[{ required: true, message: "Please enter your name!" }]}
+          data-testid="name"
+          rules={[{ required: true, message: "Please enter your name" }]}
         >
           <Input placeholder="Name" maxLength={100} className="input__box" />
         </Form.Item>
 
         <Form.Item
           name="email"
+          data-testid="email"
           rules={[
             {
               type: "email",
-              message: "This is not a valid E-mail",
+              message: "Please enter correct email address",
             },
             {
               required: true,
-              message: "Please enter your E-mail!",
+              message: "Please enter your E-mail",
             },
           ]}
         >
-          <Input placeholder="Email" maxLength={100} className="input__box" />
+          <Input
+            placeholder="Email"
+            maxLength={100}
+            className="input__box"
+            data-testid="email-input"
+          />
         </Form.Item>
 
         <Form.Item
           name="dateOfBirth"
+          data-testid="dateOfBirth"
           preserve={false}
           rules={[
             {
@@ -102,13 +121,18 @@ const InputForm: FC = () => {
             },
           ]}
         >
-          <Input placeholder="Date of Birth" className="input__box" />
+          <Input
+            placeholder="Date of Birth"
+            className="input__box"
+            data-testid="dob-input"
+          />
         </Form.Item>
 
         <Form.Item
           name="phone"
+          data-testid="phone"
           rules={[
-            { required: true, message: "Please enter phone number!" },
+            { required: true, message: "Please enter phone number" },
             {
               pattern: new RegExp(
                 "^[\\+]?[(]?[0-9]{3}[)]?[-\\s\\.]?[0-9]{3}[-\\s\\.]?[0-9]{4,6}$"
@@ -117,11 +141,20 @@ const InputForm: FC = () => {
             },
           ]}
         >
-          <Input className="input__box" placeholder="Phone number" />
+          <Input
+            className="input__box"
+            placeholder="Phone number"
+            data-testid="phone-input"
+          />
         </Form.Item>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit" className="save__button">
+          <Button
+            type="primary"
+            htmlType="submit"
+            className="submit__button"
+            data-testid="submit-btn"
+          >
             Submit
           </Button>
         </Form.Item>
