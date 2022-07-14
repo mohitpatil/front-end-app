@@ -17,7 +17,7 @@ const InputForm: FC = () => {
     setIsSpinning(true);
     const { name, dateOfBirth, email, phone } = values;
     try {
-      let response = await fetch("http://127.0.01:8881/addEmployee", {
+      let response = await fetch("http://127.0.0.1:8881/addEmployee", {
         method: "POST",
         body: JSON.stringify({
           name: name,
